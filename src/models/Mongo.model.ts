@@ -1,45 +1,34 @@
-import { isValidObjectId, Model, UpdateQuery } from 'mongoose';
-import { IModel } from '../interfaces/IModel';
+import { Model, UpdateQuery, isValidObjectId } from 'mongoose';
 import { ErrorTypes } from '../Middleware/error/catalog';
+import { IModel } from '../interfaces/IModel';
 
 export default abstract class MongoModel<T> implements IModel<T> {
   constructor(protected _model: Model<T>) {}
 
-  public async create(_obj: T): Promise<T> {
-    const created = await this._model.create(_obj);
-    return created;
+  public async create(obj: T): Promise<T> {
+    return this._model.create(obj);
   }
 
   public async read(): Promise<T[]> {
-    const carArray = await this._model.find();
-    return carArray;
+    return this._model.find();
   }
 
   public async readOne(_id: string): Promise<T | null> {
-    if (!isValidObjectId(_id)) {
-      throw new Error(ErrorTypes.InvalidMongoId);
-    }
-    const foundedCar = await this._model.findById({ _id });
-    return foundedCar;
+    if (!isValidObjectId(_id)) throw Error(ErrorTypes.InvalidMongoId);
+    return this._model.findById(_id);
   }
 
-  public async update(_id: string, _obj: Partial<T>): Promise<T | null> {
-    if (!isValidObjectId(_id)) {
-      throw new Error(ErrorTypes.InvalidMongoId);
-    }
-    const updated = await this._model.findByIdAndUpdate(
-      { _id },
-      { ..._obj } as UpdateQuery<T>,
+  public async update(_id: string, obj: Partial<T>): Promise<T | null> {
+    if (!isValidObjectId(_id)) throw Error(ErrorTypes.InvalidMongoId);
+    return this._model.findByIdAndUpdate(
+      _id,
+      { ...obj } as UpdateQuery<T>,
       { new: true },
     );
-    return updated;
   }
 
   public async delete(_id: string): Promise<T | null> {
-    if (!isValidObjectId({ _id })) {
-      throw new Error(ErrorTypes.InvalidMongoId);
-    }
-    const deleted = await this._model.findByIdAndDelete({ _id });
-    return deleted;
+    if (!isValidObjectId(_id)) throw Error(ErrorTypes.InvalidMongoId);
+    return this._model.findByIdAndDelete(_id);
   }
 }
