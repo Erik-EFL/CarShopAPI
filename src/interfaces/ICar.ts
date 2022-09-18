@@ -1,23 +1,15 @@
 import { z } from 'zod';
 import { zodVehicle } from './IVehicle';
 
-/* export interface ICar extends IVehicle {
-  doorsQty:number,
-  seatsQty:number,
-} */
-
-const zodCar = z.object({
-  ...zodVehicle.shape,
+const zodCar = zodVehicle.extend({
   doorsQty: z.number({
-    required_error: 'Doors quantity is required',
-    invalid_type_error: 'Doors quantity must be a number',
-  }).min(2, { message: 'Doors quantity must be at least 2' })
-    .max(4, { message: 'Doors quantity must be at most 4' }),
+    required_error: 'doorsQty is required',
+    invalid_type_error: 'doorsQty must be a number',
+  }).int().gte(2).lte(4),
   seatsQty: z.number({
-    required_error: 'Seats quantity is required',
-    invalid_type_error: 'Seats quantity must be a number',
-  }).min(2, { message: 'Seats quantity must be at least 2' })
-    .max(4, { message: 'Seats quantity must be at most 4' }),
+    required_error: 'seatsQty is required',
+    invalid_type_error: 'seatsQty must be a number',
+  }).int().gte(2).lte(7),
 });
 
 type ICar = z.infer<typeof zodCar>;
