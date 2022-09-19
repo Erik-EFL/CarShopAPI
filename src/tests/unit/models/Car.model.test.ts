@@ -9,7 +9,6 @@ import chaiAsPromised from 'chai-as-promised';
 
 use(chaiAsPromised);
 
-const existentId = '5f9f1b9b9b9b9b9b9b9b9b9b';
 const notExistentId = '12345ERROR';
 
 describe('Testa a camada Car Model', () => {
