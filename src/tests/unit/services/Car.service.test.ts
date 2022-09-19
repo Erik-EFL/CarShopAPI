@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import { ZodError } from 'zod';
 import { ErrorTypes } from '../../../Middleware/error/catalog';
 import CarModel from '../../../models/Car.model';
@@ -11,11 +11,12 @@ describe('Testa a camada Car Service', () => {
   const carService = new CarService(carModel);
 
   before(() => {
-    sinon.stub(carService, 'create').resolves(mock.carMockWhitId);
-    sinon.stub(carService, 'read').resolves([mock.carMockWhitId]);
-    sinon.stub(carService, 'readOne').onCall(0).resolves(mock.carMockWhitId).onCall(1).resolves(null);
-    sinon.stub(carService, 'update').onCall(0).resolves(mock.carMockWhitId).onCall(1).resolves(null);
-    sinon.stub(carService, 'delete').onCall(0).resolves(mock.carMockWhitId).onCall(1).resolves(null);
+    /* Danillo Gonçalves me deu uma luz de que esta passando o parâmetro errado para o stub */
+    sinon.stub(carModel, 'create').resolves(mock.carMockWhitId);
+    sinon.stub(carModel, 'read').resolves([mock.carMockWhitId]);
+    sinon.stub(carModel, 'readOne').onCall(0).resolves(mock.carMockWhitId).onCall(1).resolves(null);
+    sinon.stub(carModel, 'update').onCall(0).resolves(mock.carMockWhitId).onCall(1).resolves(null);
+    sinon.stub(carModel, 'delete').onCall(0).resolves(mock.carMockWhitId).onCall(1).resolves(null);
   });
 
   after(()=>{
@@ -32,8 +33,7 @@ describe('Testa a camada Car Service', () => {
       try {
         await carService.create(mock.carMockInvalid);
       } catch (error: any) {
-				const err = error as Error;
-				expect(err.message).to.be.instanceOf(ZodError);
+				expect(error).to.be.instanceOf(ZodError);
       }
     });
   });
@@ -52,10 +52,9 @@ describe('Testa a camada Car Service', () => {
 
     it('Verifica se é lançado um erro ao buscar um id invalido', async () => {
       try {
-        await carService.readOne('123');
+        await carService.readOne('any-id');
       } catch (error: any) {
-        const err = error as Error;
-        expect(err.message).to.be.equal(ErrorTypes.EntityNotFound);
+        expect(error.message).to.be.eq(ErrorTypes.EntityNotFound);
       }
     });
   });
@@ -70,22 +69,13 @@ describe('Testa a camada Car Service', () => {
       try {
         await carService.update('any-id', mock.carMock);
       } catch (error: any ) {
-				const err = error as Error;
-				expect(err.message).to.be.eq(ErrorTypes.EntityNotFound);
+				expect(error.message).to.be.eq(ErrorTypes.EntityNotFound);
       }
-
-      it('Items of object not conform.', async () => {
-        try {
-          await carService.update('any-id', mock.carMock);
-        } catch (error: any ) {
-          expect(error).to.be.instanceOf(ZodError);
-        }
-      });
     });
 
-    it('Failure - Zod Fails', async () => {
+    it('Testa se retorna o parsed error', async () => {
       try {
-        await carService.update('any-id', mock.carMockWhitIdInvalid);
+        await carService.update(mock.carMockWhitId._id, mock.carMockInvalid);
       } catch (error: any) {
         expect(error).to.be.instanceOf(ZodError);
       }
@@ -100,10 +90,9 @@ describe('Testa a camada Car Service', () => {
 
     it('Verifica se é lançado um erro ao deletar um objeto inválido', async () => {
       try {
-        await carService.delete('123');
-      } catch (error ) {
-				const err = error as Error;
-				expect(err.message).to.be.eq(ErrorTypes.EntityNotFound);
+        await carService.delete('any-id');
+      } catch (error: any) {
+				expect(error.message).to.be.eq(ErrorTypes.EntityNotFound);
       }
     });
   });
