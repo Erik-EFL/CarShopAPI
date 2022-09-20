@@ -1,15 +1,13 @@
 import sinon from 'sinon';
 import chai from 'chai';
 const { expect } = chai;
-import { NextFunction, Request, Response } from 'express';
-import { ZodError } from 'zod';
-import { ErrorTypes } from '../../../Middleware/error/catalog';
+import { Request, Response } from 'express';
 import CarModel from '../../../models/Car.model';
 import CarService from '../../../services/Car.services';
 import CarController from '../../../controllers/Car.controller';
 import mock from '../../mocks/car.mock';
 
-describe('Sua descrição', () => {
+describe('Testa a camada Car Controller', () => {
   const carModel = new CarModel();
   const carService = new CarService(carModel);
   const carController = new CarController(carService);
